@@ -45,8 +45,8 @@
 <nav class="navbar navbar-dark sticky-top px-3 d-flex align-items-center">
   <span class="fw-bold me-auto">&#x1F6F0; GSV 下载进度监控</span>
   <span class="snapshot-note">
-    快照更新: 2026-06-17 21:21:00 UTC
-    &ensp;|&ensp;数据时间: 2026-06-17T21:20:56
+    快照更新: 2026-06-17 21:26:17 UTC
+    &ensp;|&ensp;数据时间: 2026-06-17T21:26:12
   </span>
 </nav>
 
@@ -113,7 +113,8 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const DATA = {"cities": [{"city": "Tokyo", "country": "Japan", "lat": 35.69, "lon": 139.69, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Singapore", "country": "Singapore", "lat": 1.35, "lon": 103.82, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Paris", "country": "France", "lat": 48.86, "lon": 2.35, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lon": 4.9, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "SaoPaulo", "country": "Brazil", "lat": -23.55, "lon": -46.63, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "MexicoCity", "country": "Mexico", "lat": 19.43, "lon": -99.13, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Sydney", "country": "Australia", "lat": -33.87, "lon": 151.21, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "CapeTown", "country": "SouthAfrica", "lat": -33.92, "lon": 18.42, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}], "summary": {"total_cities": 8, "complete": 0, "in_progress": 0, "total_panoids": 0, "total_images": 0}, "updated_at": "2026-06-17T21:20:56.060658"};
+const DATA = {"cities": [{"city": "Tokyo", "country": "Japan", "lat": 35.69, "lon": 139.69, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Singapore", "country": "Singapore", "lat": 1.35, "lon": 103.82, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Paris", "country": "France", "lat": 48.86, "lon": 2.35, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Amsterdam", "country": "Netherlands", "lat": 52.37, "lon": 4.9, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "SaoPaulo", "country": "Brazil", "lat": -23.55, "lon": -46.63, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "MexicoCity", "country": "Mexico", "lat": 19.43, "lon": -99.13, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "Sydney", "country": "Australia", "lat": -33.87, "lon": 151.21, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}, {"city": "CapeTown", "country": "SouthAfrica", "lat": -33.92, "lon": 18.42, "status": "not_started", "step1": "nan", "step2": "nan", "step3": "nan", "step4_pct": 0.0, "step5_pct": 0.0, "panoids_total": 0, "panoids_downloaded": 0, "points_total": 0, "points_retrieved": 0, "db_ready": true}], "summary": {"total_cities": 8, "complete": 0, "in_progress": 0, "total_panoids": 0, "total_images": 0}, "updated_at": "2026-06-17T21:26:12.840459"};
+const BOUNDARIES = {"type": "FeatureCollection", "features": []};
 
 const STATUS_COLOR = {
   complete:'#198754', downloading:'#0d6efd',
@@ -167,6 +168,20 @@ document.getElementById('s-images').textContent   = fmtNum(s.total_images);
     {radius:9,color,fillColor:color,fillOpacity:.85,weight:2}
   ).addTo(map).bindPopup(popup);
 });
+
+// UCDB 边界叠加层（按状态着色，缩放后可见城市真实轮廓）
+L.geoJSON(BOUNDARIES, {
+  style: f => ({
+    color: STATUS_COLOR[f.properties.status]||'#6c757d',
+    weight: 2, fillColor: STATUS_COLOR[f.properties.status]||'#6c757d', fillOpacity: 0.18
+  }),
+  onEachFeature: (f, l) => {
+    const p = f.properties;
+    l.bindPopup('<b>'+p.city+'</b><br>'+p.country+'<br>UCDB 边界'
+      + (p.area_km2 ? '<br>面积: '+p.area_km2+' km²' : '')
+      + '<br>状态: '+(STATUS_LABEL[p.status]||p.status));
+  }
+}).addTo(map);
 
 const tbody = document.getElementById('city-tbody');
 tbody.innerHTML = (DATA.cities||[]).map(c => {
