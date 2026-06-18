@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GSV 下载进度</title>
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  body { background:#0f1117; color:#e8eaf6; font-family:'Segoe UI',sans-serif; }
+  .navbar  { background:#1a1d2e !important; border-bottom:1px solid #2d3154; }
+  .card    { background:#1a1d2e; border:1px solid #2d3154; border-radius:12px; }
+  .card-lbl { color:#8b94d4; font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; }
+  .card-val { font-size:2rem; font-weight:700; line-height:1.1; }
+  #map { height:420px; border-radius:12px; border:1px solid #2d3154; }
+  .table {
+    --bs-table-bg:transparent; --bs-table-color:#e8eaf6;
+    --bs-table-border-color:#2d3154; --bs-table-hover-bg:#1e2236;
+  }
+  .table thead th {
+    background:#1a1d2e; color:#8b94d4; font-size:.76rem;
+    text-transform:uppercase; letter-spacing:.06em; border-color:#2d3154;
+  }
+  .progress { background:#2d3154; height:10px; border-radius:4px; }
+  .badge-complete      { background:#198754; }
+  .badge-downloading   { background:#0d6efd; }
+  .badge-metadata_done { background:#0dcaf0; color:#000; }
+  .badge-processing    { background:#ffc107; color:#000; }
+  .badge-not_started   { background:#495057; }
+  .step-pill {
+    display:inline-block; width:24px; height:24px; border-radius:50%;
+    font-size:.68rem; line-height:24px; text-align:center; margin:1px;
+  }
+  .step-done    { background:#198754; color:#fff; }
+  .step-partial { background:#ffc107; color:#000; }
+  .step-none    { background:#2d3154; color:#6c757d; }
+  .num { font-variant-numeric:tabular-nums; }
+  .snapshot-note { font-size:.75rem; color:#6c757d; }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark sticky-top px-3 d-flex align-items-center">
+  <span class="fw-bold me-auto">&#x1F6F0; GSV 下载进度监控</span>
+  <span class="snapshot-note">
+    快照更新: 2026-06-17 23:50:40 UTC
+    &ensp;|&ensp;数据时间: 2026-06-17T23:49:46
+  </span>
+</nav>
+
+<div class="container-fluid py-3 px-4">
+
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+      <div class="card p-3">
+        <div class="card-lbl">监控城市</div>
+        <div class="card-val text-info num" id="s-total">—</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card p-3">
+        <div class="card-lbl">已完成下载</div>
+        <div class="card-val text-success num" id="s-complete">—</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card p-3">
+        <div class="card-lbl">进行中</div>
+        <div class="card-val text-warning num" id="s-inprog">—</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="card p-3">
+        <div class="card-lbl">已下载图像</div>
+        <div class="card-val text-primary num" id="s-images">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3 p-2">
+    <div id="map"></div>
+    <div class="mt-2 px-1 d-flex gap-3 flex-wrap" style="font-size:.74rem;color:#8b94d4">
+      <span>&#11044; <span style="color:#198754">完成</span></span>
+      <span>&#11044; <span style="color:#0d6efd">下载中</span></span>
+      <span>&#11044; <span style="color:#0dcaf0">元数据就绪</span></span>
+      <span>&#11044; <span style="color:#ffc107">处理中</span></span>
+      <span>&#11044; <span style="color:#6c757d">未开始</span></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>城市</th>
+            <th class="text-center">步骤 1–3</th>
+            <th style="min-width:170px">Step 4 · 采样点检索</th>
+            <th style="min-width:170px">Step 5 · 图像下载</th>
+            <th class="text-end">Panoids</th>
+            <th class="text-end">图像数</th>
+            <th>状态</th>
+          </tr>
+        </thead>
+        <tbody id="city-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const DATA = {"cities": [{"city": "Vienna", "country": "Austria", "db_ready": true, "lat": 48.21, "lon": 16.37, "panoids_downloaded": 23057, "panoids_total": 23057, "points_retrieved": 0, "points_total": 0, "status": "complete", "step1": "", "step2": "", "step3": "", "step4_pct": 0.0, "step5_pct": 100.0}, {"city": "LosAngeles", "country": "UnitedStates", "db_ready": true, "lat": 34.05, "lon": -118.24, "panoids_downloaded": 2891519, "panoids_total": 9935159, "points_retrieved": 2519178, "points_total": 2519178, "status": "downloading", "step1": "100.0%", "step2": "100.0%", "step3": "100.0%", "step4_pct": 100.0, "step5_pct": 29.1}, {"city": "HongKong", "country": "China", "db_ready": true, "lat": 22.32, "lon": 114.17, "panoids_downloaded": 2704984, "panoids_total": 2716498, "points_retrieved": 587571, "points_total": 587571, "status": "downloading", "step1": "100.0%", "step2": "100.0%", "step3": "100.0%", "step4_pct": 100.0, "step5_pct": 99.6}, {"city": "London", "country": "UnitedKingdom", "db_ready": true, "lat": 51.51, "lon": -0.13, "panoids_downloaded": 1364199, "panoids_total": 5228304, "points_retrieved": 2129000, "points_total": 4633769, "status": "downloading", "step1": "100%", "step2": "100.0%", "step3": "100%", "step4_pct": 45.9, "step5_pct": 26.1}], "summary": {"complete": 1, "in_progress": 3, "total_cities": 4, "total_images": 27935036, "total_panoids": 6983759}, "updated_at": "2026-06-17T23:49:46.984589"};
+
+const STATUS_COLOR = {
+  complete:'#198754', downloading:'#0d6efd',
+  metadata_done:'#0dcaf0', processing:'#ffc107', not_started:'#6c757d'
+};
+const STATUS_LABEL = {
+  complete:'已完成', downloading:'下载中',
+  metadata_done:'元数据就绪', processing:'处理中', not_started:'未开始'
+};
+
+const map = L.map('map').setView([20,10],2);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  attribution:'©OpenStreetMap ©CARTO', subdomains:'abcd', maxZoom:19
+}).addTo(map);
+
+function fmtNum(n) {
+  if (n==null||isNaN(n)) return '—';
+  if (n>=1e6) return (n/1e6).toFixed(2)+'M';
+  if (n>=1e3) return (n/1e3).toFixed(1)+'K';
+  return n.toLocaleString();
+}
+function stepPill(val) {
+  const pct = parseFloat((val||'').replace('%',''));
+  if (isNaN(pct)||pct===0) return '<span class="step-pill step-none">—</span>';
+  if (pct>=99.9)           return '<span class="step-pill step-done">✓</span>';
+  return '<span class="step-pill step-partial">'+pct.toFixed(0)+'%</span>';
+}
+function bar(pct, color) {
+  const p = Math.min(100,Math.max(0,pct||0));
+  return '<div class="d-flex align-items-center gap-2">'
+       + '<div class="progress flex-grow-1"><div class="progress-bar"'
+       + ' style="width:'+p+'%;background:'+color+'"></div></div>'
+       + '<span class="num" style="min-width:44px;font-size:.8rem">'+p.toFixed(1)+'%</span>'
+       + '</div>';
+}
+
+const s = DATA.summary||{};
+document.getElementById('s-total').textContent    = s.total_cities??'—';
+document.getElementById('s-complete').textContent = s.complete??'—';
+document.getElementById('s-inprog').textContent   = s.in_progress??'—';
+document.getElementById('s-images').textContent   = fmtNum(s.total_images);
+
+(DATA.cities||[]).forEach(c => {
+  const color = STATUS_COLOR[c.status]||'#6c757d';
+  const popup = '<b>'+c.city+'</b><br>'+c.country+'<br>'
+    +'状态: '+(STATUS_LABEL[c.status]||c.status)+'<br>'
+    +'Panoids: '+fmtNum(c.panoids_downloaded)+' / '+fmtNum(c.panoids_total)+'<br>'
+    +'图像: ≈'+fmtNum(c.panoids_downloaded*4)+'<br>'
+    +'Step 4: '+c.step4_pct+'%&ensp;Step 5: '+c.step5_pct+'%';
+  L.circleMarker([c.lat,c.lon],
+    {radius:9,color,fillColor:color,fillOpacity:.85,weight:2}
+  ).addTo(map).bindPopup(popup);
+});
+
+const tbody = document.getElementById('city-tbody');
+tbody.innerHTML = (DATA.cities||[]).map(c => {
+  const s4col = c.step4_pct>=100?'#198754':'#0dcaf0';
+  const s5col = c.step5_pct>=100?'#198754':'#0d6efd';
+  const panStr = c.db_ready
+    ? '<span class="text-success">'+fmtNum(c.panoids_downloaded)+'</span>'
+      +'<span class="text-secondary"> / '+fmtNum(c.panoids_total)+'</span>'
+    : '<span style="color:#6c757d;font-style:italic;font-size:.78rem">—</span>';
+  return '<tr>'
+    +'<td><span class="fw-semibold">'+c.city+'</span>'
+        +'<br><small class="text-secondary">'+c.country+'</small></td>'
+    +'<td class="text-center">'+stepPill(c.step1)+stepPill(c.step2)+stepPill(c.step3)+'</td>'
+    +'<td>'+bar(c.step4_pct,s4col)+'</td>'
+    +'<td>'+bar(c.step5_pct,s5col)+'</td>'
+    +'<td class="text-end num" style="font-size:.85rem">'+panStr+'</td>'
+    +'<td class="text-end num" style="font-size:.85rem">'+fmtNum(c.panoids_downloaded*4)+'</td>'
+    +'<td><span class="badge badge-'+c.status+'">'+(STATUS_LABEL[c.status]||c.status)+'</span></td>'
+    +'</tr>';
+}).join('');
+</script>
+</body>
+</html>
